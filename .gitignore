@@ -1,0 +1,27 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+env/
+*.env
+.env
+myenv/
+
+# Distribution/build files
+build/
+dist/
+*.egg-info/
+
+# Database files
+*.sqlite3
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# macOS files
+.DS_Store
