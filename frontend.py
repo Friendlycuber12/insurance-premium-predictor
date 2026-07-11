@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-API_URL = "http://13.60.45.63:8000/predict" 
+API_URL = "http://13.60.45.63:8000/predict"
 
 st.title("Insurance Premium Category Predictor")
 st.markdown("Enter your details below:")
@@ -30,19 +30,32 @@ if st.button("Predict Premium Category"):
     }
 
     try:
-        response = requests.post(API_URL, json=input_data)
+        response = requests.post(API_URL, json=input_data, timeout=10)
         result = response.json()
 
         if response.status_code == 200 and "response" in result:
             prediction = result["response"]
-            st.success(f"Predicted Insurance Premium Category: **{prediction['predicted_category']}**")
-            st.write("🔍 Confidence:", prediction["confidence"])
-            st.write("📊 Class Probabilities:")
-            st.json(prediction["class_probabilities"])
+            predicted_category = prediction.get("predicted_category") or prediction.get("predicted_class")
+
+            if not predicted_category:
+                st.error("API response did not include a prediction category.")
+                st.json(result)
+            else:
+                st.success(f"Predicted Insurance Premium Category: **{predicted_category}**")
+                st.write("Confidence:", prediction["confidence"])
+                st.write("Class Probabilities:")
+                st.json(prediction["class_probabilities"])
 
         else:
             st.error(f"API Error: {response.status_code}")
             st.write(result)
 
     except requests.exceptions.ConnectionError:
-        st.error("❌ Could not connect to the FastAPI server. Make sure it's running.")
+        st.error("Could not connect to the FastAPI server. Make sure it's running.")
+    except requests.exceptions.Timeout:
+        st.error("The FastAPI server took too long to respond.")
+    except requests.exceptions.JSONDecodeError:
+        st.error("The API returned a non-JSON response.")
+        st.write(response.text)
+    except requests.exceptions.RequestException as e:
+        st.error(f"Request failed: {e}")
