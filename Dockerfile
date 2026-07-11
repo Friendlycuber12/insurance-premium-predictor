@@ -1,4 +1,4 @@
-# Use Python 3.14 base image
+# Use Python 3.12 base image
 FROM python:3.12-slim
 
 # Prevent Python from writing .pyc files and buffer stdout/stderr
@@ -16,8 +16,8 @@ RUN pip install --upgrade pip && \
 # Copy rest of application code
 COPY . .
 
-# Expose the application port
-EXPOSE 8000
+# Expose FastAPI and Streamlit ports
+EXPOSE 8000 8501
 
 # Command to start FastAPI application
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
